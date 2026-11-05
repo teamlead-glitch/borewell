@@ -5,6 +5,13 @@ Pull request into `main` -> Vercel builds a preview -> check it on desktop and p
 merges -> production deploys from `main`. Roll back with Vercel "Instant Rollback" to the previous
 production deployment (never promote a branch build).
 
+## Build command
+`npm run build` runs `next build --webpack` on purpose. Some hosts (e.g. the Hostinger staging
+server, GLIBC < 2.29) can't load Next's native compiler; Turbopack needs it, Webpack does not.
+For the same reason the config is `next.config.mjs` (plain JS) and Tailwind runs through
+`postcss.config.mjs`. `npm run build:turbopack` is the faster build for machines that support it;
+`next dev` still uses Turbopack.
+
 ## Environment variables (Vercel: Production + Preview)
 
 | Name | Where | Purpose |
