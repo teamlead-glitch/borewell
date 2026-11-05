@@ -30,7 +30,8 @@ const CSP = [
   "font-src 'self' data: https://fonts.gstatic.com",
   // Google Maps renders vector maps in a worker
   "worker-src 'self' blob:",
-  "frame-src 'self' https://www.googletagmanager.com",
+  // GTM preview + the Contact page Google Maps embed (admin > Settings > Google Maps Link)
+  "frame-src 'self' https://www.googletagmanager.com https://www.google.com https://maps.google.com https://www.google.co.in",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

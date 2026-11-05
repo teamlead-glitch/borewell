@@ -2,6 +2,7 @@ import { SEO_CONFIG } from "@/constants/config";
 import { serverGet } from "@/lib/server-api";
 import type { CmsJson } from "@/types/common";
 import type { ApiSettings, SiteContact } from "@/types/settings";
+import { toMapEmbedUrl, toMapLink } from "@/utils/google-maps-link";
 
 /** CMS settings (admin > Settings), loaded once in the layout. Only admin values are shown:
  *  an empty setting is null - never a made-up default. Labels and titles always stay; only
@@ -32,7 +33,9 @@ export function toSiteContact(s: ApiSettings | null): SiteContact {
     email: clean(s?.email),
     address: clean(s?.address),
     location: clean(s?.location),
-    mapUrl: clean(s?.map_url),
+    // "Google Maps Link" in admin > Settings: a normal link, an embed link or <iframe> code
+    mapUrl: toMapLink(clean(s?.map_url), clean(s?.address)),
+    mapEmbedUrl: toMapEmbedUrl(clean(s?.map_url)),
     hours,
   };
 }

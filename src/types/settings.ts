@@ -27,7 +27,10 @@ export interface SiteContact {
   email: string | null;
   address: string | null;
   location: string | null;
+  // Normal Google Maps page for "Get directions" / "Open in Google Maps"
   mapUrl: string | null;
+  // Google Maps iframe src for the Contact page map (null: the map art is shown)
+  mapEmbedUrl: string | null;
   // Always the three rows (Mon – Fri, Saturday, Sunday); time is null when not set
   hours: { day: string; time: string | null }[];
 }
