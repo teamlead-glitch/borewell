@@ -13,6 +13,9 @@ export const SEO_CONFIG = {
     "Send one enquiry. Our team inspects your site, compares quotes from verified borewell companies near you, and you choose who drills.",
 };
 
+// Shown on a service card while the service has no photo in the admin
+export const NO_IMAGE = "/images/no-image.svg";
+
 // Google Tag Manager container - every tracking tag lives inside GTM.
 // Empty until the client's container exists: the layout then renders no GTM at all.
 export const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || "";

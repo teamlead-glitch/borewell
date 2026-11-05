@@ -1,26 +1,5 @@
-import type { SiteContact } from "@/types/settings";
-
-/* ---------- FALLBACK CONTACT DETAILS ---------- */
-// Used only while a value is empty in the admin Settings (or the API is unreachable).
-// Replace with the client's real details, or simply fill them in the admin.
-export const CONTACT_DEFAULTS: SiteContact = {
-  name: "Borewell",
-  phone: "+91 94470 12345",
-  phoneHref: "tel:+919447012345",
-  phoneHours: "Mon – Fri, 9:00 am – 6:00 pm",
-  whatsapp: "+91 94470 12345",
-  whatsappHref: "https://wa.me/919447012345",
-  email: "hello@borewell.in",
-  address: "2nd Floor, Thekkumkara Building, MG Road, Thrissur, Kerala 680001",
-  location: "Thrissur, Kerala",
-  mapUrl: "https://maps.google.com/?q=MG+Road+Thrissur+Kerala",
-  hours: [
-    { day: "Mon – Fri", time: "9:00 am – 6:00 pm" },
-    { day: "Saturday", time: "9:00 am – 1:00 pm" },
-    { day: "Sunday", time: "Closed" },
-  ],
-};
-
+// Contact details (phone, email, address, hours...) are not kept here: they come only from
+// the admin Settings via lib/site-settings.ts.
 export const SINCE_YEAR = 2015;
 
 export const NAV_ITEMS = [

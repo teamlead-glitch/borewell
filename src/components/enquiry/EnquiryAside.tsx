@@ -36,9 +36,11 @@ export default function EnquiryAside({ contact }: { contact: SiteContact }) {
       <div className="rounded-[var(--radius-card)] bg-deep p-5 text-white">
         <b className="text-[16px]">Prefer to talk?</b>
         <p className="mt-1 text-[14px] text-white/70">Call us and we&apos;ll fill this in for you.</p>
-        <Button href={contact.phoneHref} variant="light" className="mt-4 h-10 text-[14px]">
-          <Phone size={15} aria-hidden="true" /> {contact.phone}
-        </Button>
+        {contact.phone && contact.phoneHref && (
+          <Button href={contact.phoneHref} variant="light" className="mt-4 h-10 text-[14px]">
+            <Phone size={15} aria-hidden="true" /> {contact.phone}
+          </Button>
+        )}
       </div>
     </aside>
   );

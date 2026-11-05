@@ -25,9 +25,10 @@ export default async function HomePage() {
     "@type": "LocalBusiness",
     name: contact.name,
     url: siteUrl,
-    telephone: contact.phone,
-    email: contact.email,
-    address: { "@type": "PostalAddress", streetAddress: contact.address, addressRegion: "Kerala", addressCountry: "IN" },
+    // Only what the admin Settings hold (undefined keys are left out of the JSON)
+    telephone: contact.phone ?? undefined,
+    email: contact.email ?? undefined,
+    address: { "@type": "PostalAddress", streetAddress: contact.address ?? undefined, addressRegion: "Kerala", addressCountry: "IN" },
     areaServed: "Kerala",
   };
 
@@ -45,7 +46,7 @@ export default async function HomePage() {
       <CtaBand
         {...PROVIDER_CTA}
         primary={{ label: "Register your company", href: "/register" }}
-        secondary={{ label: `Call ${contact.phone}`, href: contact.phoneHref }}
+        secondary={contact.phone && contact.phoneHref ? { label: `Call ${contact.phone}`, href: contact.phoneHref } : undefined}
       />
     </>
   );

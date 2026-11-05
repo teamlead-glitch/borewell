@@ -1,24 +1,15 @@
 import type { ApiService, Service } from "@/types/service";
-
-// Design photos used while a service has no image in the admin (keeps every card visual)
-const FALLBACK_IMAGES = [
-  "/images/irrigation.jpg",
-  "/images/hero-rig.jpg",
-  "/images/svc-flushing.jpg",
-  "/images/svc-pump.jpg",
-  "/images/svc-survey.jpg",
-  "/images/svc-recharge.jpg",
-];
+import { NO_IMAGE } from "@/constants/config";
 
 /** API record -> what the cards need. Pure, so server pages and client forms share it. */
 export function toServices(items: ApiService[]): Service[] {
-  return items.map((s, i) => ({
+  return items.map((s) => ({
     id: s.id,
     name: s.name,
     short: s.short_description?.trim() || "",
     // Admin descriptions may hold bullet lines after a blank line; cards show the first paragraph
     description: (s.description || s.short_description || "").split(/\n\s*\n/)[0].trim(),
-    image: s.image_url || FALLBACK_IMAGES[i % FALLBACK_IMAGES.length],
+    image: s.image_url || NO_IMAGE,
     verifiedOnly: Boolean(s.is_verified_only),
   }));
 }

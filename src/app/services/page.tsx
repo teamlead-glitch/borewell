@@ -38,7 +38,7 @@ export default async function ServicesPage() {
         title="Get a site inspection first"
         text="Tell us where you want to drill. Our team inspects the site before any provider quotes."
         primary={{ label: "Send enquiry", href: "/enquiry" }}
-        secondary={{ label: `Call ${contact.phone}`, href: contact.phoneHref }}
+        secondary={contact.phone && contact.phoneHref ? { label: `Call ${contact.phone}`, href: contact.phoneHref } : undefined}
       />
     </>
   );

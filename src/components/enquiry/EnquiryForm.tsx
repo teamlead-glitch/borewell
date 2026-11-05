@@ -69,7 +69,7 @@ export default function EnquiryForm({ initialServices, initialDistricts, contact
       const target = enquiryErrorStep(res.errors);
       if (target !== undefined && target !== step) go(target);
       // Field errors say what to fix; anything else (network, server) also offers the phone
-      setError(res.errors ? res.error! : `${res.error || "The enquiry wasn't sent."} You can also call us on ${contact.phone}.`);
+      setError(res.errors ? res.error! : `${res.error || "The enquiry wasn't sent."} ${contact.phone ? `You can also call us on ${contact.phone}.` : "Try sending it again."}`);
       return;
     }
     trackLead("enquiry");

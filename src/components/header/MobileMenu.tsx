@@ -76,9 +76,11 @@ export default function MobileMenu({ open, onClose, pathname, contact }: Props) 
           <Button href="/enquiry" onClick={onClose}>
             Send enquiry
           </Button>
-          <Button href={contact.phoneHref} variant="outline">
-            <Phone size={16} aria-hidden="true" /> {contact.phone}
-          </Button>
+          {contact.phone && contact.phoneHref && (
+            <Button href={contact.phoneHref} variant="outline">
+              <Phone size={16} aria-hidden="true" /> {contact.phone}
+            </Button>
+          )}
         </div>
       </div>
     </div>

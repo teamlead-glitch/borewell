@@ -39,9 +39,11 @@ export default function RegisterThankYou({ contact }: { contact: SiteContact }) 
       />
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-[var(--radius-card)] bg-aquifer-soft p-5 text-[15px] text-aquifer-dark">
         <span>Your subscription is arranged with our team by phone.</span>
-        <Button href={contact.phoneHref} variant="outline" className="h-10 border-aquifer-dark text-[14px] text-aquifer-dark">
-          <Phone size={15} aria-hidden="true" /> {contact.phone}
-        </Button>
+        {contact.phone && contact.phoneHref && (
+          <Button href={contact.phoneHref} variant="outline" className="h-10 border-aquifer-dark text-[14px] text-aquifer-dark">
+            <Phone size={15} aria-hidden="true" /> {contact.phone}
+          </Button>
+        )}
       </div>
       <div className="flex justify-center">
         <Button href="/" variant="dark">

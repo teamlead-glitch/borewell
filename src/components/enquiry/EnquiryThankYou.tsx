@@ -72,9 +72,11 @@ export default function EnquiryThankYou({ contact }: { contact: SiteContact }) {
             "Call our team."
           )}
         </span>
-        <Button href={contact.phoneHref} variant="outline" className="h-10 border-aquifer-dark text-[14px] text-aquifer-dark">
-          <Phone size={15} aria-hidden="true" /> {contact.phone}
-        </Button>
+        {contact.phone && contact.phoneHref && (
+          <Button href={contact.phoneHref} variant="outline" className="h-10 border-aquifer-dark text-[14px] text-aquifer-dark">
+            <Phone size={15} aria-hidden="true" /> {contact.phone}
+          </Button>
+        )}
       </div>
 
       <div className="flex flex-wrap justify-center gap-3">

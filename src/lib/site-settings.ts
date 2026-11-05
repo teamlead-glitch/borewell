@@ -1,35 +1,38 @@
-import { CONTACT_DEFAULTS } from "@/constants/site";
+import { SEO_CONFIG } from "@/constants/config";
 import { serverGet } from "@/lib/server-api";
 import type { CmsJson } from "@/types/common";
 import type { ApiSettings, SiteContact } from "@/types/settings";
 
-/** CMS settings, loaded once in the layout. Each empty value falls back to CONTACT_DEFAULTS,
- *  so the header/footer never show blanks while the admin Settings are being filled in. */
+/** CMS settings (admin > Settings), loaded once in the layout. Only admin values are shown:
+ *  an empty setting is null - never a made-up default. Labels and titles always stay; only
+ *  the empty value (and a button that needs it) is left out. */
 export async function getSiteContact(): Promise<SiteContact> {
   const json = await serverGet<CmsJson<ApiSettings>>("/settings");
   return toSiteContact(json?.data ?? null);
 }
 
+const clean = (v: string | null | undefined) => v?.trim() || null;
+
 export function toSiteContact(s: ApiSettings | null): SiteContact {
-  const d = CONTACT_DEFAULTS;
-  if (!s) return d;
   const hours = [
-    { day: "Mon – Fri", time: s.hours_weekdays },
-    { day: "Saturday", time: s.hours_saturday },
-    { day: "Sunday", time: s.hours_sunday },
+    { day: "Mon – Fri", time: clean(s?.hours_weekdays) },
+    { day: "Saturday", time: clean(s?.hours_saturday) },
+    { day: "Sunday", time: clean(s?.hours_sunday) },
   ];
-  const hasHours = hours.some((h) => h.time);
+  const phone = clean(s?.phone);
+  const whatsapp = clean(s?.whatsapp);
   return {
-    name: s.company_name || d.name,
-    phone: s.phone || d.phone,
-    phoneHref: s.phone_link || d.phoneHref,
-    phoneHours: s.phone_hours || d.phoneHours,
-    whatsapp: s.whatsapp || d.whatsapp,
-    whatsappHref: s.whatsapp_link || d.whatsappHref,
-    email: s.email || d.email,
-    address: s.address || d.address,
-    location: s.location || d.location,
-    mapUrl: s.map_url || d.mapUrl,
-    hours: hasHours ? hours.map((h) => ({ day: h.day, time: h.time || "Closed" })) : d.hours,
+    // The brand name, not contact data: keeps "© Borewell" and aria labels readable
+    name: clean(s?.company_name) || SEO_CONFIG.SITE_NAME,
+    phone,
+    phoneHref: phone ? clean(s?.phone_link) : null,
+    phoneHours: clean(s?.phone_hours),
+    whatsapp,
+    whatsappHref: whatsapp ? clean(s?.whatsapp_link) : null,
+    email: clean(s?.email),
+    address: clean(s?.address),
+    location: clean(s?.location),
+    mapUrl: clean(s?.map_url),
+    hours,
   };
 }

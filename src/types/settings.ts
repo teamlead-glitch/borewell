@@ -15,17 +15,19 @@ export interface ApiSettings {
   whatsapp_link: string | null;
 }
 
-// Contact details as the header, footer and pages use them (never null)
+// Contact details as the header, footer and pages use them. Every value comes from the admin
+// Settings; null (or an empty hours list) means "not set" and the UI hides it.
 export interface SiteContact {
   name: string;
-  phone: string;
-  phoneHref: string;
-  phoneHours: string;
-  whatsapp: string;
-  whatsappHref: string;
-  email: string;
-  address: string;
-  location: string;
-  mapUrl: string;
-  hours: { day: string; time: string }[];
+  phone: string | null;
+  phoneHref: string | null;
+  phoneHours: string | null;
+  whatsapp: string | null;
+  whatsappHref: string | null;
+  email: string | null;
+  address: string | null;
+  location: string | null;
+  mapUrl: string | null;
+  // Always the three rows (Mon – Fri, Saturday, Sunday); time is null when not set
+  hours: { day: string; time: string | null }[];
 }

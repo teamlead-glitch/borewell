@@ -40,10 +40,12 @@ export default function Header({ contact }: { contact: SiteContact }) {
         <DesktopNav pathname={pathname} solid={solid} />
 
         <div className="ml-auto hidden items-center gap-5 lg:flex">
-          <a href={contact.phoneHref} className="flex items-center gap-2 text-[15px] font-semibold tabular-nums">
-            <Phone size={16} className={solid ? "text-aquifer" : "text-spring"} aria-hidden="true" />
-            {contact.phone}
-          </a>
+          {contact.phone && contact.phoneHref && (
+            <a href={contact.phoneHref} className="flex items-center gap-2 text-[15px] font-semibold tabular-nums">
+              <Phone size={16} className={solid ? "text-aquifer" : "text-spring"} aria-hidden="true" />
+              {contact.phone}
+            </a>
+          )}
           <Button href="/enquiry" variant={solid ? "primary" : "light"} className="h-11">
             Send enquiry
           </Button>

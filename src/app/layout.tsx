@@ -40,7 +40,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           {children}
         </main>
         <Footer contact={contact} />
-        <WhatsAppButton href={contact.whatsappHref} />
+        {contact.whatsappHref && <WhatsAppButton href={contact.whatsappHref} />}
       </body>
     </html>
   );

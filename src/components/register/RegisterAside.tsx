@@ -23,12 +23,20 @@ export default function RegisterAside({ contact }: { contact: SiteContact }) {
         <h2 className="mb-4 text-[22px] font-bold">How approval works</h2>
         <VTimeline steps={APPROVAL_STEPS} doneCount={0} tone="dark" />
       </div>
-      <a href={contact.phoneHref} className="flex items-center gap-3 rounded-[var(--radius-card)] bg-white/8 p-4 text-[15px] hover:bg-white/12">
-        <Phone size={18} className="text-spring" aria-hidden="true" />
-        <span>
-          Questions? <b className="tabular-nums">{contact.phone}</b>
-        </span>
-      </a>
+      {/* "Questions?" always shows; the number (and the call link) only when set in admin > Settings */}
+      {contact.phone && contact.phoneHref ? (
+        <a href={contact.phoneHref} className="flex items-center gap-3 rounded-[var(--radius-card)] bg-white/8 p-4 text-[15px] hover:bg-white/12">
+          <Phone size={18} className="text-spring" aria-hidden="true" />
+          <span>
+            Questions? <b className="tabular-nums">{contact.phone}</b>
+          </span>
+        </a>
+      ) : (
+        <p className="flex items-center gap-3 rounded-[var(--radius-card)] bg-white/8 p-4 text-[15px]">
+          <Phone size={18} className="text-spring" aria-hidden="true" />
+          <span>Questions?</span>
+        </p>
+      )}
     </aside>
   );
 }

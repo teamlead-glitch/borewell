@@ -19,20 +19,25 @@ export default function Footer({ contact }: { contact: SiteContact }) {
         </div>
         <FooterColumn title="Company" links={FOOTER_LINKS.company} />
         <FooterColumn title="Get started" links={FOOTER_LINKS.getStarted} />
+        {/* Heading always shows; each line only when it is filled in admin > Settings */}
         <div>
           <h2 className="mb-4 text-[15px] font-semibold text-white">Talk to us</h2>
           <ul className="space-y-2 text-[15px]">
-            <li>
-              <a href={contact.phoneHref} className="tabular-nums hover:text-white">
-                {contact.phone}
-              </a>
-            </li>
-            <li>
-              <a href={`mailto:${contact.email}`} className="hover:text-white">
-                {contact.email}
-              </a>
-            </li>
-            <li>{contact.address}</li>
+            {contact.phone && contact.phoneHref && (
+              <li>
+                <a href={contact.phoneHref} className="tabular-nums hover:text-white">
+                  {contact.phone}
+                </a>
+              </li>
+            )}
+            {contact.email && (
+              <li>
+                <a href={`mailto:${contact.email}`} className="hover:text-white">
+                  {contact.email}
+                </a>
+              </li>
+            )}
+            {contact.address && <li>{contact.address}</li>}
           </ul>
         </div>
       </div>
