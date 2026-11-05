@@ -1,22 +1,9 @@
 /* ---------- OLD SITE URL REDIRECTS (301, single hop) ---------- */
-// Order matters: exact rows above the slug rules.
-type LegacyRedirect = { source: string; destination: string; statusCode: 301 };
+// The redirect rows live in legacy-redirects-data.mjs (also read by next.config.mjs);
+// add or change rows there. This file adds the helpers the proxy uses.
+import { EXACT_REDIRECTS, LEGACY_REDIRECTS, SLUG_RULES } from "./legacy-redirects-data.mjs";
 
-const EXACT_REDIRECTS: [string, string][] = [
-  // ["/old-page", "/new-page"],
-  ["/contact-us", "/contact"],
-  ["/about-us", "/about"],
-];
-
-// Pattern rules: old folder -> new folder, slug kept
-const SLUG_RULES: [string, string][] = [
-  // ["/blog-detail/", "/blogs/"],
-];
-
-export const LEGACY_REDIRECTS: LegacyRedirect[] = [
-  ...EXACT_REDIRECTS.map(([source, destination]) => ({ source, destination, statusCode: 301 as const })),
-  ...SLUG_RULES.map(([from, to]) => ({ source: `${from}:slug`, destination: `${to}:slug`, statusCode: 301 as const })),
-];
+export { LEGACY_REDIRECTS };
 
 export function isLegacySlugPath(path: string): boolean {
   return SLUG_RULES.some(([from]) => path.startsWith(from));

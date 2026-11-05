@@ -1,5 +1,6 @@
-import type { NextConfig } from "next";
-import { LEGACY_REDIRECTS } from "./src/constants/legacy-redirects";
+// Plain JavaScript (not next.config.ts) on purpose: hosts without Next's native compiler
+// (e.g. older Linux, GLIBC < 2.29) can't compile a TypeScript config. Types via JSDoc.
+import { LEGACY_REDIRECTS } from "./src/constants/legacy-redirects-data.mjs";
 
 const isDev = process.env.NODE_ENV !== "production";
 
@@ -35,18 +36,12 @@ const CSP = [
 
 const NOINDEX = [{ key: "X-Robots-Tag", value: "noindex, nofollow" }];
 
-const nextConfig: NextConfig = {
+/** @type {import("next").NextConfig} */
+const nextConfig = {
   poweredByHeader: false,
   // Previous caching model on purpose: CMS data is cached with unstable_cache + ISR (see
   // src/lib/cms-fetch.ts), so Cache Components (cacheComponents) stays off.
-  turbopack: {
-    rules: {
-      "*.css": {
-        loaders: ["@tailwindcss/turbopack"],
-        as: "*.css",
-      },
-    },
-  },
+  // Tailwind runs through PostCSS (postcss.config.mjs) for both Turbopack and Webpack.
   async redirects() {
     return [
       // TODO when the Vercel project exists: production alias -> real domain (API calls left alone)

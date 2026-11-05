@@ -34,6 +34,6 @@ Without it, changes appear within `CMS_REVALIDATE_SECONDS` (5 minutes).
   holds demo fallbacks only.
 - Add `GET /page/{slug}` to the API (SEO records + content pages such as privacy policy and terms).
   Until then fixed pages use their fallback titles and `/privacy-policy`, `/terms` answer 404.
-- Set the Vercel project alias redirect in `next.config.ts` (`TODO`).
+- Set the Vercel project alias redirect in `next.config.mjs` (`TODO`).
 - Review the `[csp]` logs, then switch `Content-Security-Policy-Report-Only` to `Content-Security-Policy`.
 - Allow the production site origin in the API's CORS settings.
