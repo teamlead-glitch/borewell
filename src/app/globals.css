@@ -1,0 +1,225 @@
+@import "tailwindcss";
+
+/*
+  Palette is taken from a Kerala ground cross-section:
+  basalt (rock), mist (monsoon sky), aquifer + spring (groundwater),
+  laterite + clay + moss (soil layers — used only in strata graphics).
+*/
+@theme {
+  --color-basalt: #172320;
+  --color-basalt-2: #24332f;
+  --color-deep: #0b4a59;
+  --color-deep-2: #0e5a6b;
+  --color-mist: #f4f7f8;
+  --color-paper: #ffffff;
+  --color-line: #d9e0dc;
+  --color-line-soft: #e7ece9;
+  --color-stone: #5d6b66;
+  --color-stone-2: #85918c;
+  --color-aquifer: #0f6e8c;
+  --color-aquifer-dark: #0a5068;
+  --color-aquifer-soft: #e2f0f4;
+  --color-spring: #47c3cc;
+  --color-laterite: #a9472b;
+  --color-clay: #c98a5a;
+  --color-moss: #5b7a4a;
+
+  --font-sans: var(--font-jakarta), system-ui, "Segoe UI", sans-serif;
+
+  --radius-chip: 6px;
+  --radius-field: 10px;
+  --radius-card: 18px;
+  --radius-panel: 28px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-mist);
+  color: var(--color-basalt);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+
+}
+
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
+
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* Teal ring with a white gap: visible on the mist pages AND on the deep-teal panels, where a
+   teal-only ring disappeared. No border-radius here: unlayered CSS beats Tailwind's utilities,
+   so it squared off every rounded-full pill on keyboard focus. */
+:focus-visible {
+  outline: 2.5px solid var(--color-aquifer);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #fff;
+}
+
+::selection {
+  background: var(--color-spring);
+  color: var(--color-basalt);
+}
+
+/* Focus targets moved to by script (main via the skip link, the wizard step panel) */
+[tabindex="-1"]:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Skip link: off-screen until focused by keyboard */
+.skip-link {
+  position: fixed;
+  left: 12px;
+  top: 12px;
+  z-index: 60;
+  transform: translateY(-160%);
+  border-radius: 9999px;
+  background: var(--color-basalt);
+  color: #fff;
+  padding: 10px 18px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.skip-link:focus {
+  transform: none;
+}
+
+/* Reduced motion: no smooth scroll, no hover lifts / zooms, no reveal */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  ::before,
+  ::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* Form controls share one look */
+.field-input {
+  width: 100%;
+  min-height: 46px;
+  border: 1.5px solid var(--color-line);
+  border-radius: var(--radius-field);
+  background: var(--color-paper);
+  padding: 10px 14px;
+  font-size: 15px;
+  color: var(--color-basalt);
+  transition: border-color 0.15s;
+}
+.field-input::placeholder {
+  color: var(--color-stone-2);
+}
+.field-input:hover {
+  border-color: var(--color-stone-2);
+}
+.field-input:focus {
+  outline: none;
+  border-color: var(--color-aquifer);
+  box-shadow: 0 0 0 3px var(--color-aquifer-soft);
+}
+.field-input:disabled {
+  background: var(--color-mist);
+  border-style: dashed;
+  color: var(--color-stone-2);
+  cursor: not-allowed;
+}
+select.field-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%235d6b66' stroke-width='1.8'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 38px;
+}
+
+/* Teal gradient used by the hero and page headers */
+.bg-hero {
+  background:
+    radial-gradient(ellipse 60% 70% at 85% 30%, rgb(71 195 204 / 0.45), transparent 70%),
+    linear-gradient(160deg, #0b4a59 0%, #0f6e8c 55%, #2a9bb0 100%);
+}
+
+/* ---------- The one orchestrated motion: the "How it works" steps rise in sequence ----------
+   CSS scroll-driven animation, so content is always visible where it isn't supported. Each
+   step's range is offset by --step, so on desktop (one row) they arrive one after another.
+   Used ONLY there: fading every section in read as template filler. */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: reveal-up linear both;
+      animation-timeline: view();
+      animation-range: entry calc(var(--step, 0) * 12%) entry calc(35% + var(--step, 0) * 12%);
+    }
+  }
+}
+
+/* Glass surface used on the hero */
+.glass {
+  background: rgb(255 255 255 / 0.12);
+  border: 1px solid rgb(255 255 255 / 0.22);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+
+/* ---------- CMS content pages (app/[slug]): admin rich-text HTML ---------- */
+.cms-content {
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--color-stone);
+}
+.cms-content > * + * {
+  margin-top: 1em;
+}
+.cms-content h2,
+.cms-content h3 {
+  margin-top: 1.6em;
+  color: var(--color-basalt);
+  font-weight: 700;
+}
+.cms-content h2 {
+  font-size: 28px;
+}
+.cms-content h3 {
+  font-size: 21px;
+}
+.cms-content a {
+  color: var(--color-aquifer);
+  text-decoration: underline;
+}
+.cms-content ul,
+.cms-content ol {
+  padding-left: 1.4em;
+}
+.cms-content ul {
+  list-style: disc;
+}
+.cms-content ol {
+  list-style: decimal;
+}
