@@ -19,6 +19,21 @@ export interface EnquiryPayload {
   rig_access?: string;
   nearby_well_info?: string;
   consent: boolean;
+  // From POST /enquiry/step: the API turns that Incomplete enquiry into this one
+  draft_token?: string;
+}
+
+/* ---------- POST /enquiry/step (SaveEnquiryStepRequest) ----------
+ * Each finished step is saved as an "Incomplete" enquiry the team can follow up.
+ * Only name + phone are required; anything else is sent when known. */
+export type EnquiryStepPayload = Partial<Omit<EnquiryPayload, "consent">> &
+  Pick<EnquiryPayload, "customer_name" | "phone"> & {
+    step: number;
+    draft_token?: string;
+  };
+
+export interface EnquiryStepResult {
+  draft_token: string | null;
 }
 
 export interface EnquiryResult {

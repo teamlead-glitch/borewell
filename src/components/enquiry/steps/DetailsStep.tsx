@@ -19,7 +19,7 @@ export default function DetailsStep({ form, set }: { form: EnquiryFormState; set
             autoComplete="name"
           />
         </Field>
-        <Field label="Phone number" required htmlFor="e-phone" hint="Our team will call you on this number.">
+        <Field label="Phone number" required htmlFor="e-phone" hint="Our team will call you on this number, even if you don't finish this form.">
           <PhoneInput id="e-phone" required value={form.phone} onChange={(v) => set("phone", v)} autoComplete="tel-national" />
         </Field>
         <Field label="Email" htmlFor="e-email" hint="We'll send your enquiry reference here.">

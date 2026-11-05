@@ -1,5 +1,5 @@
 import type { Place } from "@/types/location";
-import type { EnquiryPayload } from "@/types/submission";
+import type { EnquiryPayload, EnquiryStepPayload } from "@/types/submission";
 import { EMPTY_PIN, type Pin } from "@/components/forms/MapPicker";
 
 export const ENQUIRY_STEPS = ["Your details", "What do you need?", "Where is the site?", "About the property"];
@@ -94,4 +94,22 @@ export function toEnquiryPayload(f: EnquiryFormState): EnquiryPayload {
     nearby_well_info: f.nearby.trim() || undefined,
     consent: f.consent,
   };
+}
+
+/** What is known after `step` finished steps (1-4), for the background save. Empty values
+ *  and an unpinned map are left out, so the API only stores what the visitor gave. */
+export function toEnquiryStepPayload(f: EnquiryFormState, step: number, draftToken: string | null): EnquiryStepPayload {
+  const full = toEnquiryPayload(f);
+  // Consent is only given with the final "Send enquiry"
+  const known = Object.fromEntries(
+    Object.entries(full).filter(([k, v]) => k !== "consent" && v !== undefined && v !== "" && !(Array.isArray(v) && v.length === 0))
+  ) as Partial<EnquiryPayload>;
+  if (!known.district_id) delete known.district_id;
+  // Property type has a default; only send it once the visitor has been on that step
+  if (step < ENQUIRY_STEPS.length) delete known.property_type;
+  if (!f.pin.set) {
+    delete known.latitude;
+    delete known.longitude;
+  }
+  return { ...known, customer_name: full.customer_name, phone: full.phone, step, draft_token: draftToken ?? undefined };
 }

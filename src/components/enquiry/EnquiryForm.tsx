@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { STORAGE_KEYS } from "@/constants/forms";
 import { trackLead } from "@/lib/gtm";
-import { submitEnquiry } from "@/services/submissions";
+import { saveEnquiryStep, submitEnquiry } from "@/services/submissions";
 import type { District } from "@/types/location";
 import type { Service } from "@/types/service";
 import type { SiteContact } from "@/types/settings";
@@ -22,6 +22,7 @@ import {
   enquiryErrorStep,
   enquiryStepError,
   toEnquiryPayload,
+  toEnquiryStepPayload,
   type EnquiryFormState,
   type SetEnquiryField,
 } from "./enquiry-form-state";
@@ -42,6 +43,19 @@ export default function EnquiryForm({ initialServices, initialDistricts, contact
 
   const set: SetEnquiryField = useCallback((key, value) => setForm((f) => ({ ...f, [key]: value })), []);
 
+  // Every finished step is saved in the background as an "Incomplete" enquiry, so the team
+  // can follow up if the visitor stops. Saves run one after another (the first one returns
+  // the token the rest reuse); a failed save is ignored and never blocks the visitor.
+  const draftToken = useRef<string | null>(null);
+  const saving = useRef<Promise<void>>(Promise.resolve());
+  function saveStep(finished: number) {
+    const snapshot = form;
+    saving.current = saving.current.then(async () => {
+      const res = await saveEnquiryStep(toEnquiryStepPayload(snapshot, finished, draftToken.current));
+      if (res.success && res.data?.draft_token) draftToken.current = res.data.draft_token;
+    });
+  }
+
   // ?service=<id> from a service card pre-selects that tile. The tiles are on step 2, so it
   // is applied once, on the way there. Read from window (not useSearchParams) so the page
   // stays fully static and cacheable.
@@ -60,12 +74,19 @@ export default function EnquiryForm({ initialServices, initialDistricts, contact
     const err = enquiryStepError(step, form);
     if (err) return setError(err);
     if (step === 0) applyServiceFromUrl();
-    if (step < last) return go(step + 1);
+    if (step < last) {
+      saveStep(step + 1);
+      return go(step + 1);
+    }
 
     setSubmitting(true);
-    const res = await submitEnquiry(toEnquiryPayload(form));
+    // Wait for the step saves, so the Incomplete enquiry becomes this one (not a second copy)
+    await saving.current;
+    const res = await submitEnquiry({ ...toEnquiryPayload(form), draft_token: draftToken.current ?? undefined });
     if (!res.success || !res.data) {
       setSubmitting(false);
+      // Not sent: keep the last step's answers on the Incomplete enquiry for the follow-up call
+      saveStep(last + 1);
       const target = enquiryErrorStep(res.errors);
       if (target !== undefined && target !== step) go(target);
       // Field errors say what to fix; anything else (network, server) also offers the phone
