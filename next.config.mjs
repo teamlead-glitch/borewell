@@ -18,14 +18,18 @@ const API_ORIGIN = (() => {
 // below to Content-Security-Policy to enforce it.
 const CSP = [
   "default-src 'self'",
-  // Next.js inline bootstrap + GTM; React dev tools need eval in development only
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://*.googletagmanager.com https://*.google-analytics.com`,
-  // CMS api (forms, location lists) + analytics beacons
-  `connect-src 'self' ${API_ORIGIN} https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com`,
-  // Service photos are served by the CMS; local Laragon serves them over http
+  // Next.js inline bootstrap + GTM; React dev tools need eval in development only.
+  // Google Maps (enquiry / registration pin): script + its library chunks
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://*.googletagmanager.com https://*.google-analytics.com https://*.googleapis.com https://*.gstatic.com https://*.google.com`,
+  // CMS api (forms, location lists) + analytics beacons + Google Maps data
+  `connect-src 'self' ${API_ORIGIN} https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.googleapis.com https://*.google.com https://*.gstatic.com data: blob:`,
+  // Service photos are served by the CMS; local Laragon serves them over http. Map tiles are https
   `img-src 'self' data: blob: https:${isDev ? " http:" : ""}`,
-  "style-src 'self' 'unsafe-inline'",
-  "font-src 'self' data:",
+  // Google Maps adds inline styles and the Roboto stylesheet
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' data: https://fonts.gstatic.com",
+  // Google Maps renders vector maps in a worker
+  "worker-src 'self' blob:",
   "frame-src 'self' https://www.googletagmanager.com",
   "object-src 'none'",
   "base-uri 'self'",
