@@ -10,6 +10,7 @@ import type { Service } from "@/types/service";
 import type { SiteContact } from "@/types/settings";
 import SubmitBar from "@/components/forms/SubmitBar";
 import { useMasters } from "@/components/forms/useMasters";
+import { isStepValidationError, useStepSaver } from "@/components/forms/wizard/useStepSaver";
 import { useWizard } from "@/components/forms/wizard/useWizard";
 import WizardError from "@/components/forms/wizard/WizardError";
 import WizardNav from "@/components/forms/wizard/WizardNav";
@@ -43,17 +44,11 @@ export default function EnquiryForm({ initialServices, initialDistricts, contact
 
   const set: SetEnquiryField = useCallback((key, value) => setForm((f) => ({ ...f, [key]: value })), []);
 
-  // Every finished step is saved in the background as an "Incomplete" enquiry, so the team
-  // can follow up if the visitor stops. Saves run one after another (the first one returns
-  // the token the rest reuse); a failed save is ignored and never blocks the visitor.
-  const draftToken = useRef<string | null>(null);
-  const saving = useRef<Promise<void>>(Promise.resolve());
+  // Every finished step is saved as an "Incomplete" enquiry the team can follow up
+  const drafts = useStepSaver();
   function saveStep(finished: number) {
     const snapshot = form;
-    saving.current = saving.current.then(async () => {
-      const res = await saveEnquiryStep(toEnquiryStepPayload(snapshot, finished, draftToken.current));
-      if (res.success && res.data?.draft_token) draftToken.current = res.data.draft_token;
-    });
+    return drafts.save((token) => saveEnquiryStep(toEnquiryStepPayload(snapshot, finished, token)));
   }
 
   // ?service=<id> from a service card pre-selects that tile. The tiles are on step 2, so it
@@ -75,14 +70,23 @@ export default function EnquiryForm({ initialServices, initialDistricts, contact
     if (err) return setError(err);
     if (step === 0) applyServiceFromUrl();
     if (step < last) {
-      saveStep(step + 1);
+      // Save, and stay on the step if the API rejects it (e.g. phone number not valid).
+      // A network or server failure doesn't stop the visitor.
+      setSubmitting(true);
+      const res = await saveStep(step + 1);
+      setSubmitting(false);
+      if (isStepValidationError(res)) {
+        const target = enquiryErrorStep(res.errors);
+        if (target !== undefined && target < step) go(target);
+        return setError(res.error!);
+      }
       return go(step + 1);
     }
 
     setSubmitting(true);
     // Wait for the step saves, so the Incomplete enquiry becomes this one (not a second copy)
-    await saving.current;
-    const res = await submitEnquiry({ ...toEnquiryPayload(form), draft_token: draftToken.current ?? undefined });
+    const draftToken = await drafts.flush();
+    const res = await submitEnquiry({ ...toEnquiryPayload(form), draft_token: draftToken });
     if (!res.success || !res.data) {
       setSubmitting(false);
       // Not sent: keep the last step's answers on the Incomplete enquiry for the follow-up call
@@ -128,7 +132,7 @@ export default function EnquiryForm({ initialServices, initialDistricts, contact
           />
         )}
 
-        <WizardNav steps={ENQUIRY_STEPS} step={step} onBack={() => go(step - 1)} />
+        <WizardNav steps={ENQUIRY_STEPS} step={step} onBack={() => go(step - 1)} busy={submitting} />
       </form>
     </div>
   );

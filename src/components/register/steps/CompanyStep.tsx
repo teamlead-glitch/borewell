@@ -15,7 +15,7 @@ export default function CompanyStep({ form, set }: { form: RegisterFormState; se
         <Field label="Contact person" required htmlFor="r-person">
           <input id="r-person" required maxLength={255} className="field-input" value={form.person} onChange={(e) => set("person", e.target.value)} autoComplete="name" />
         </Field>
-        <Field label="Phone" required htmlFor="r-phone">
+        <Field label="Phone" required htmlFor="r-phone" hint="Our team will call you on this number, even if you don't finish this form.">
           <PhoneInput id="r-phone" required value={form.phone} onChange={(v) => set("phone", v)} autoComplete="tel-national" />
         </Field>
         <Field label="Alternate phone" htmlFor="r-phone2">

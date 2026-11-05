@@ -1,5 +1,5 @@
 import type { Place } from "@/types/location";
-import type { ProviderPayload } from "@/types/submission";
+import type { ProviderPayload, ProviderStepPayload } from "@/types/submission";
 import { EMPTY_PIN, type Pin } from "@/components/forms/MapPicker";
 
 export const REGISTER_STEPS = ["Company details", "Services you offer", "Your location"];
@@ -71,5 +71,29 @@ export function toProviderPayload(f: RegisterFormState): ProviderPayload {
     latitude: f.pin.lat,
     longitude: f.pin.lng,
     terms_accepted: f.consent,
+  };
+}
+
+/** What is known after `step` finished steps (1-3), for the background save. Empty values
+ *  and an unpinned map are left out, so the API only stores what the company gave. */
+export function toProviderStepPayload(f: RegisterFormState, step: number, draftToken: string | null): ProviderStepPayload {
+  const full = toProviderPayload(f);
+  // Terms are only accepted with the final "Send registration"
+  const known = Object.fromEntries(
+    Object.entries(full).filter(([k, v]) => k !== "terms_accepted" && v !== undefined && v !== "" && !(Array.isArray(v) && v.length === 0))
+  ) as Partial<ProviderPayload>;
+  if (!known.district_id) delete known.district_id;
+  if (!f.pin.set) {
+    delete known.latitude;
+    delete known.longitude;
+  }
+  return {
+    ...known,
+    company_name: full.company_name,
+    contact_person: full.contact_person,
+    phone: full.phone,
+    email: full.email,
+    step,
+    draft_token: draftToken ?? undefined,
   };
 }
