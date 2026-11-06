@@ -54,6 +54,8 @@ export interface ProviderPayload {
   alternate_phone?: string;
   email: string;
   gst_number?: string;
+  // Ground Water Department registration number (required)
+  gwd_number: string;
   years_in_business?: number;
   no_of_rigs?: number;
   services: number[];
@@ -70,9 +72,9 @@ export interface ProviderPayload {
 
 /* ---------- POST /provider/register/step (SaveProviderStepRequest) ----------
  * Each finished step is saved as an "Incomplete" provider the team can follow up.
- * Step 1 (company, contact person, phone, email) is required; the rest when known. */
+ * Step 1 (company, contact person, phone, email, GWD no.) is required; the rest when known. */
 export type ProviderStepPayload = Partial<Omit<ProviderPayload, "terms_accepted">> &
-  Pick<ProviderPayload, "company_name" | "contact_person" | "phone" | "email"> & {
+  Pick<ProviderPayload, "company_name" | "contact_person" | "phone" | "email" | "gwd_number"> & {
     step: number;
     draft_token?: string;
   };

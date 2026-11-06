@@ -24,7 +24,10 @@ export default function CompanyStep({ form, set }: { form: RegisterFormState; se
         <Field label="Email" required htmlFor="r-email" hint="Approval and job confirmations are sent here.">
           <input id="r-email" type="email" required maxLength={255} className="field-input" value={form.email} onChange={(e) => set("email", e.target.value)} autoComplete="email" />
         </Field>
-        <Field label="GST / registration no." htmlFor="r-gst">
+        <Field label="GWD registration no." required htmlFor="r-gwd" hint="Your Ground Water Department registration number.">
+          <input id="r-gwd" required maxLength={50} className="field-input" value={form.gwd} onChange={(e) => set("gwd", e.target.value)} />
+        </Field>
+        <Field label="GST number" htmlFor="r-gst">
           <input id="r-gst" maxLength={50} className="field-input" value={form.gst} onChange={(e) => set("gst", e.target.value)} />
         </Field>
         <Field label="Years in business" htmlFor="r-years">

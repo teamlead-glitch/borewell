@@ -11,6 +11,7 @@ export type RegisterFormState = {
   phone2: string;
   email: string;
   gst: string;
+  gwd: string;
   years: string;
   rigs: string;
   services: number[];
@@ -29,6 +30,7 @@ export const INITIAL_REGISTER: RegisterFormState = {
   phone2: "",
   email: "",
   gst: "",
+  gwd: "",
   years: "",
   rigs: "",
   services: [],
@@ -61,6 +63,7 @@ export function toProviderPayload(f: RegisterFormState): ProviderPayload {
     alternate_phone: f.phone2 || undefined,
     email: f.email.trim(),
     gst_number: f.gst.trim() || undefined,
+    gwd_number: f.gwd.trim(),
     years_in_business: optionalInt(f.years),
     no_of_rigs: optionalInt(f.rigs),
     services: f.services,
@@ -93,6 +96,7 @@ export function toProviderStepPayload(f: RegisterFormState, step: number, draftT
     contact_person: full.contact_person,
     phone: full.phone,
     email: full.email,
+    gwd_number: full.gwd_number,
     step,
     draft_token: draftToken ?? undefined,
   };
