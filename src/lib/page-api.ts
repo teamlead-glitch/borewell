@@ -5,8 +5,8 @@ import { getRedirectSlug } from "@/lib/slug-redirect";
 
 export type PageResult = { page: PageContent | null; redirectTo: string | null };
 
-// GET /page/{slug}. Not in the API yet (5 Nov 2026): until it is, every call answers 404,
-// so fixed pages use their fallback SEO and app/[slug] answers "not found".
+// GET /page/{slug}: an active admin page (Website pages / Content pages) with its SEO.
+// 404 when the slug is unknown or the page is off, with { redirect: { to } } when it moved.
 // Accepts the usual Laravel { status, data } and the older { page_content } shape.
 export async function fetchPageResult(slug: string, token?: string): Promise<PageResult> {
   const { found, json } = await cmsGet(cmsUrl(`/page/${encodeURIComponent(slug)}`), token);
