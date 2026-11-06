@@ -18,7 +18,10 @@ export interface ApiSettings {
 // Contact details as the header, footer and pages use them. Every value comes from the admin
 // Settings; null (or an empty hours list) means "not set" and the UI hides it.
 export interface SiteContact {
+  // Brand name for "© ..." and labels: the admin company name, else the site name
   name: string;
+  // The admin company name exactly as entered (null when empty)
+  companyName: string | null;
   phone: string | null;
   phoneHref: string | null;
   phoneHours: string | null;

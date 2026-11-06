@@ -25,6 +25,7 @@ export function toSiteContact(s: ApiSettings | null): SiteContact {
   return {
     // The brand name, not contact data: keeps "© Borewell" and aria labels readable
     name: clean(s?.company_name) || SEO_CONFIG.SITE_NAME,
+    companyName: clean(s?.company_name),
     phone,
     phoneHref: phone ? clean(s?.phone_link) : null,
     phoneHours: clean(s?.phone_hours),
