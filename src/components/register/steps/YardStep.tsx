@@ -8,7 +8,7 @@ import type { RegisterFormState, SetRegisterField } from "../register-form-state
 export default function YardStep({ form, set, districts }: { form: RegisterFormState; set: SetRegisterField; districts: District[] | null }) {
   return (
     <FormCard step="Step 3 of 3" title="Your registered location" aside="One per company" active>
-      <LocationFields idPrefix="r" districts={districts} value={form.place} onChange={(p) => set("place", p)} withWard={false} />
+      <LocationFields idPrefix="r" districts={districts} value={form.place} onChange={(p) => set("place", p)} />
       <Field label="Office / yard address" required htmlFor="r-address">
         <textarea id="r-address" required rows={2} maxLength={1000} className="field-input" value={form.address} onChange={(e) => set("address", e.target.value)} />
       </Field>

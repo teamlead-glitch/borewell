@@ -1,32 +1,35 @@
 "use client";
 
-import { fetchLocalBodies, fetchTaluks } from "@/services/catalog-api";
-import type { District, LocalBody, Place, Taluk } from "@/types/location";
+import { fetchLocalBodies, fetchTaluks, fetchVillages } from "@/services/catalog-api";
+import type { District, LocalBody, Place, Taluk, Village } from "@/types/location";
 import Field from "./Field";
 import { useKeyedList } from "./useKeyedList";
 
 /*
-  District -> taluk -> panchayat / municipality, each a list from the API (the API rejects
-  names that are not in these lists). Ward is typed in. Picking a district clears the
-  taluk and panchayat; picking a taluk clears the panchayat.
+  District -> taluk -> panchayat / municipality (-> village), each a list from the API (the
+  API rejects names that are not in these lists). Picking a level clears the levels below it.
+  `withVillage`: the enquiry form also asks for the revenue village.
 */
 export default function LocationFields({
   districts,
   value,
   onChange,
-  withWard = true,
+  withVillage = false,
   idPrefix,
 }: {
   districts: District[] | null;
   value: Place;
   onChange: (p: Place) => void;
-  withWard?: boolean;
+  withVillage?: boolean;
   idPrefix: string;
 }) {
   const taluks = useKeyedList<Taluk>(value.districtId, () => fetchTaluks(value.districtId));
   const talukId = taluks.items.find((t) => t.name === value.taluk)?.id;
   const bodiesKey = value.districtId && talukId ? `${value.districtId}:${talukId}` : "";
   const bodies = useKeyedList<LocalBody>(bodiesKey, () => fetchLocalBodies(value.districtId, talukId));
+  const bodyId = bodies.items.find((b) => b.name === value.panchayat)?.id;
+  const villagesKey = withVillage && bodyId ? `${bodyId}:${talukId}` : "";
+  const villages = useKeyedList<Village>(villagesKey, () => fetchVillages(bodyId!, talukId));
 
   const id = (name: string) => `${idPrefix}-${name}`;
 
@@ -43,7 +46,7 @@ export default function LocationFields({
           className="field-input"
           value={value.districtId}
           disabled={!districts}
-          onChange={(e) => onChange({ ...value, districtId: e.target.value, taluk: "", panchayat: "" })}
+          onChange={(e) => onChange({ ...value, districtId: e.target.value, taluk: "", panchayat: "", village: "" })}
         >
           <option value="">{districts ? "Select district" : "Loading districts…"}</option>
           {districts?.map((d) => (
@@ -61,7 +64,7 @@ export default function LocationFields({
           className="field-input"
           value={value.taluk}
           disabled={!value.districtId || taluks.loading}
-          onChange={(e) => onChange({ ...value, taluk: e.target.value, panchayat: "" })}
+          onChange={(e) => onChange({ ...value, taluk: e.target.value, panchayat: "", village: "" })}
         >
           <option value="">{!value.districtId ? "Select a district first" : taluks.loading ? "Loading taluks…" : "Select taluk"}</option>
           {taluks.items.map((t) => (
@@ -79,7 +82,7 @@ export default function LocationFields({
           className="field-input"
           value={value.panchayat}
           disabled={!talukId || bodies.loading}
-          onChange={(e) => onChange({ ...value, panchayat: e.target.value })}
+          onChange={(e) => onChange({ ...value, panchayat: e.target.value, village: "" })}
         >
           <option value="">{!talukId ? "Select a taluk first" : bodies.loading ? "Loading…" : "Select panchayat / municipality"}</option>
           {bodies.items.map((b) => (
@@ -90,17 +93,23 @@ export default function LocationFields({
         </select>
       </Field>
 
-      {withWard && (
-        <Field label="Ward" required htmlFor={id("ward")}>
-          <input
-            id={id("ward")}
+      {withVillage && (
+        <Field label="Village" required htmlFor={id("village")}>
+          <select
+            id={id("village")}
             required
-            maxLength={100}
             className="field-input"
-            placeholder="Ward name or number"
-            value={value.ward}
-            onChange={(e) => onChange({ ...value, ward: e.target.value })}
-          />
+            value={value.village}
+            disabled={!bodyId || villages.loading}
+            onChange={(e) => onChange({ ...value, village: e.target.value })}
+          >
+            <option value="">{!bodyId ? "Select a panchayat first" : villages.loading ? "Loading villages…" : "Select village"}</option>
+            {villages.items.map((v) => (
+              <option key={v.id} value={v.name}>
+                {v.name}
+              </option>
+            ))}
+          </select>
         </Field>
       )}
     </div>

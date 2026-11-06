@@ -8,8 +8,11 @@ export interface EnquiryPayload {
   district_id: number;
   taluk: string;
   panchayat: string;
-  ward: string;
+  // Revenue village of the panchayat (from GET /villages)
+  village: string;
   address: string;
+  // The exact place / landmark in the customer's words
+  place?: string;
   latitude: number;
   longitude: number;
   property_type?: string;

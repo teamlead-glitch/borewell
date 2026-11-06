@@ -16,7 +16,13 @@ export interface LocalBody {
   taluk_ids: number[];
 }
 
-// Form value. The API validates taluk and panchayat by NAME within the district.
-export type Place = { districtId: string; taluk: string; panchayat: string; ward: string };
+// Revenue village (LGD) of a panchayat / municipality
+export interface Village {
+  id: number;
+  name: string;
+}
+
+// Form value. The API validates taluk, panchayat and village by NAME within the district.
+export type Place = { districtId: string; taluk: string; panchayat: string; village: string };
 
 export type Coords = { lat: number; lng: number };

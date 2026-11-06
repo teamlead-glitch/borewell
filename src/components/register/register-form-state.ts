@@ -34,7 +34,7 @@ export const INITIAL_REGISTER: RegisterFormState = {
   years: "",
   rigs: "",
   services: [],
-  place: { districtId: "", taluk: "", panchayat: "", ward: "" },
+  place: { districtId: "", taluk: "", panchayat: "", village: "" },
   address: "",
   pin: EMPTY_PIN,
   consent: false,

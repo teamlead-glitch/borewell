@@ -12,6 +12,8 @@ export type EnquiryFormState = {
   details: string;
   place: Place;
   address: string;
+  // "Place" text area: the exact spot / landmark in the customer's words (optional)
+  spot: string;
   pin: Pin;
   propertyType: string;
   extent: string;
@@ -30,8 +32,9 @@ export const INITIAL_ENQUIRY: EnquiryFormState = {
   email: "",
   services: [],
   details: "",
-  place: { districtId: "", taluk: "", panchayat: "", ward: "" },
+  place: { districtId: "", taluk: "", panchayat: "", village: "" },
   address: "",
+  spot: "",
   pin: EMPTY_PIN,
   propertyType: "residential",
   extent: "",
@@ -60,8 +63,9 @@ const FIELD_STEP: Record<string, number> = {
   district_id: 2,
   taluk: 2,
   panchayat: 2,
-  ward: 2,
+  village: 2,
   address: 2,
+  place: 2,
   latitude: 2,
   longitude: 2,
 };
@@ -82,8 +86,9 @@ export function toEnquiryPayload(f: EnquiryFormState): EnquiryPayload {
     district_id: Number(f.place.districtId),
     taluk: f.place.taluk,
     panchayat: f.place.panchayat,
-    ward: f.place.ward.trim(),
+    village: f.place.village,
     address: f.address.trim(),
+    place: f.spot.trim() || undefined,
     latitude: f.pin.lat,
     longitude: f.pin.lng,
     property_type: f.propertyType || undefined,

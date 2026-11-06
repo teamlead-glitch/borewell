@@ -1,7 +1,7 @@
 import { api } from "@/services/api";
 import { toServices } from "@/utils/services";
 import type { ApiService, Service } from "@/types/service";
-import type { District, LocalBody, Taluk } from "@/types/location";
+import type { District, LocalBody, Taluk, Village } from "@/types/location";
 
 /* ---------- Masters for the forms, fetched in the browser ---------- */
 // Services and districts normally arrive from the server page (initialX props); these
@@ -25,5 +25,11 @@ export async function fetchTaluks(districtId: string): Promise<Taluk[]> {
 
 export async function fetchLocalBodies(districtId: string, talukId?: number): Promise<LocalBody[]> {
   const res = await api.get<LocalBody[]>("/local-bodies", { district_id: districtId, taluk_id: talukId });
+  return res.success ? (res.data ?? []) : [];
+}
+
+// Villages of a panchayat / municipality, within the taluk (a local body can span two)
+export async function fetchVillages(localBodyId: number, talukId?: number): Promise<Village[]> {
+  const res = await api.get<Village[]>("/villages", { local_body_id: localBodyId, taluk_id: talukId });
   return res.success ? (res.data ?? []) : [];
 }
