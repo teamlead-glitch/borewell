@@ -60,13 +60,13 @@ export default function MobileMenu({ open, onClose, pathname, contact }: Props) 
             <X size={20} />
           </button>
         </div>
-        <nav aria-label="Mobile" className="mt-10 flex flex-col">
+        <nav aria-label="Mobile" className="mt-6 flex flex-col">
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               onClick={onClose}
-              className={cn("border-b border-line py-4 text-[24px] font-bold", isActive(pathname, item.href) ? "text-aquifer" : "text-basalt")}
+              className={cn("border-b border-line py-3.5 text-[18px] font-semibold", isActive(pathname, item.href) ? "text-aquifer" : "text-basalt")}
             >
               {item.label}
             </Link>
