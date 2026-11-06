@@ -43,3 +43,18 @@ export const PROVIDER_CTA = {
   text: "Register your company once. We call you when an inspected enquiry is close to your location.",
   points: ["No app or login needed", "Jobs matched by road distance", "Quotes taken by phone"],
 };
+
+// 404 page: where most visitors were trying to go
+export const NOT_FOUND = {
+  code: "404",
+  eyebrow: "Error 404",
+  title: "Page not found",
+  lead: "Like a dry bore, there's nothing here. The page may have moved, or the link may be mistyped.",
+  linksTitle: "Popular pages",
+  links: [
+    { href: "/services", title: "Services", text: "Every borewell service we handle" },
+    { href: "/enquiry", title: "Send enquiry", text: "Tell us about your site and get quotes" },
+    { href: "/register", title: "Register your company", text: "For borewell drilling companies" },
+    { href: "/contact", title: "Contact", text: "Phone, email and office address" },
+  ],
+};
