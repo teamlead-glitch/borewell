@@ -10,14 +10,17 @@ export function toServices(items: ApiService[]): Service[] {
     // Admin descriptions may hold bullet lines after a blank line; cards show the first paragraph
     description: (s.description || s.short_description || "").split(/\n\s*\n/)[0].trim(),
     image: s.image_url || NO_IMAGE,
-    verifiedOnly: Boolean(s.is_verified_only),
+    providerSelectable: !s.is_verified_only,
   }));
 }
 
-/** Home "bento": the verified-only service is the big card; the rest follow in API order */
+/** Home "bento": the first service (admin sort order) is the big card; the rest follow */
 export function splitFeatured(services: Service[]) {
-  const featured = services.find((s) => s.verifiedOnly) ?? services[0];
-  return { featured, regular: services.filter((s) => s !== featured) };
+  const [featured, ...regular] = services;
+  return { featured, regular };
 }
+
+/** Services a provider can offer on registration: team-only ones are left out */
+export const providerServices = (services: Service[] | null) => services?.filter((s) => s.providerSelectable) ?? null;
 
 export const enquiryHref = (serviceId?: number) => (serviceId ? `/enquiry?service=${serviceId}` : "/enquiry");

@@ -3,7 +3,6 @@ import { getServicesOrThrow } from "@/lib/catalog";
 import { fetchPageBySlug } from "@/lib/page-api";
 import { generateSeoMetadata } from "@/lib/seo";
 import { getSiteContact } from "@/lib/site-settings";
-import { splitFeatured } from "@/utils/services";
 import CtaBand from "@/components/common/CtaBand";
 import JsonLd from "@/components/common/JsonLd";
 import PageHeader from "@/components/common/PageHeader";
@@ -21,9 +20,6 @@ export default async function ServicesPage() {
   // Services are this page's content: if the API is down (and nothing is cached) the page
   // answers 5xx via error.tsx rather than an empty list
   const [page, services, contact] = await Promise.all([fetchPageBySlug(slug), getServicesOrThrow(), getSiteContact()]);
-  // As in the approved design: the verified-only service is promoted on the home page, the
-  // grid lists the others
-  const { regular } = splitFeatured(services);
 
   return (
     <>
@@ -33,7 +29,7 @@ export default async function ServicesPage() {
         title="Borewell services across Kerala"
         lead="Every job starts with a site inspection by our team. Choose a service to send an enquiry."
       />
-      <ServiceGrid services={regular} />
+      <ServiceGrid services={services} />
       <CtaBand
         title="Get a site inspection first"
         text="Tell us where you want to drill. Our team inspects the site before any provider quotes."

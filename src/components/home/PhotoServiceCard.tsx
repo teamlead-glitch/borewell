@@ -38,7 +38,7 @@ export default function PhotoServiceCard({ service, featured }: { service: Servi
         {featured ? (
           <>
             <span className="block text-[30px] font-extrabold leading-tight tracking-tight sm:text-[36px]">{service.name}</span>
-            <span className="mt-3 block max-w-[42ch] text-[16px] text-white/80">Work by verified providers only.</span>
+            {service.short && <span className="mt-3 block max-w-[42ch] text-[16px] text-white/80">{service.short}</span>}
           </>
         ) : (
           <>
