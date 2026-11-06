@@ -7,6 +7,7 @@ import { DEFAULT_COORDS } from "@/constants/forms";
 import { loadGoogleMaps, onMapsAuthFailure } from "@/lib/google-maps";
 import { cn } from "@/utils/cn";
 import { MapArt, MapPin } from "@/components/common/MapArt";
+import PlaceSearch, { type FoundPlace } from "./PlaceSearch";
 
 /** Where the pin sits in the placeholder box (0-1) and the coordinates sent to the API */
 export type Pin = { x: number; y: number; lat: number; lng: number; set: boolean };
@@ -19,7 +20,8 @@ const round = (n: number) => +n.toFixed(6);
 const pinAt = (lat: number, lng: number): Pin => ({ x: 0.5, y: 0.5, lat: round(lat), lng: round(lng), set: true });
 
 /*
-  Google Maps when NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is set: tap to drop the pin, drag to adjust.
+  Google Maps when NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is set: search for a place, or tap to drop
+  the pin; drag to adjust.
   Without a key, or if Google refuses it, the placeholder art from the approved design is shown.
   The API measures road distance to providers from these coordinates.
 */
@@ -80,13 +82,32 @@ function GoogleMapPicker({ value, onChange, hint, onFail }: Props & { onFail: ()
   const map = useRef<google.maps.Map | null>(null);
   const marker = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
   const [ready, setReady] = useState(false);
+  // Name of the searched place the pin was dropped at (cleared when the pin is moved by hand)
+  const [found, setFound] = useState("");
   // Latest callbacks for the map listeners (set up once)
   const latest = useRef({ onChange, onFail, value });
   useEffect(() => {
     latest.current = { onChange, onFail, value };
   });
 
+  function goTo(place: FoundPlace) {
+    onChange(pinAt(place.lat, place.lng));
+    setFound(place.name);
+    if (!map.current) return;
+    if (place.viewport) {
+      // An area (town, panchayat) shows its extent; a building or landmark stays close
+      map.current.fitBounds(place.viewport);
+      google.maps.event.addListenerOnce(map.current, "idle", () => {
+        if ((map.current?.getZoom() ?? 0) > 18) map.current?.setZoom(18);
+      });
+    } else {
+      map.current.panTo({ lat: place.lat, lng: place.lng });
+      map.current.setZoom(17);
+    }
+  }
+
   const geo = useMyLocation((p) => {
+    setFound("");
     onChange(p);
     map.current?.panTo({ lat: p.lat, lng: p.lng });
     map.current?.setZoom(18);
@@ -123,12 +144,15 @@ function GoogleMapPicker({ value, onChange, hint, onFail }: Props & { onFail: ()
         });
 
         map.current.addListener("click", (e: google.maps.MapMouseEvent) => {
-          if (e.latLng) latest.current.onChange(pinAt(e.latLng.lat(), e.latLng.lng()));
+          if (!e.latLng) return;
+          setFound("");
+          latest.current.onChange(pinAt(e.latLng.lat(), e.latLng.lng()));
         });
         marker.current.addEventListener("gmp-dragend", () => {
           const pos = marker.current?.position;
           if (!pos) return;
           const { lat, lng } = pos instanceof google.maps.LatLng ? pos.toJSON() : (pos as google.maps.LatLngLiteral);
+          setFound("");
           latest.current.onChange(pinAt(lat, lng));
         });
         setReady(true);
@@ -152,6 +176,7 @@ function GoogleMapPicker({ value, onChange, hint, onFail }: Props & { onFail: ()
 
   return (
     <div className="flex flex-col gap-2">
+      {ready && <PlaceSearch onPick={goTo} />}
       <div className="relative h-[300px] overflow-hidden rounded-[var(--radius-card)] border border-line bg-mist sm:h-[340px]">
         <div ref={box} className="absolute inset-0" aria-label="Map: tap to drop the pin" />
         {!ready && <span className="absolute inset-0 grid place-items-center text-[14px] text-stone">Loading map…</span>}
@@ -160,7 +185,11 @@ function GoogleMapPicker({ value, onChange, hint, onFail }: Props & { onFail: ()
         </div>
       </div>
       <p className="text-[13px] font-medium tabular-nums text-basalt" aria-live="polite">
-        {value.set ? `Pinned at ${value.lat.toFixed(5)}, ${value.lng.toFixed(5)}. Drag the pin to adjust.` : "Tap the map to drop the pin."}
+        {!value.set
+          ? "Search for your place, or tap the map to drop the pin."
+          : found
+            ? `Pinned at ${found}. Drag the pin or tap the map to mark the exact spot.`
+            : `Pinned at ${value.lat.toFixed(5)}, ${value.lng.toFixed(5)}. Drag the pin to adjust.`}
       </p>
       <GeoError message={geo.geoError} />
       <p className="text-[13px] text-stone">{hint}</p>

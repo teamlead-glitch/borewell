@@ -23,6 +23,11 @@ export const NO_IMAGE = "/images/no-image.svg";
 export const MAPS_CONFIG = {
   API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
   MAP_ID: process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID || "DEMO_MAP_ID",
+  // Place search: results near Kerala first, India only
+  SEARCH_BIAS: { south: 8.17, west: 74.85, north: 12.8, east: 77.42 },
+  SEARCH_REGION: "in",
+  SEARCH_MIN_CHARS: 3,
+  SEARCH_DELAY_MS: 250,
 };
 
 // Google Tag Manager container - every tracking tag lives inside GTM.
